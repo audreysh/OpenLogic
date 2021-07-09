@@ -5,7 +5,11 @@
 
 \begin{document}
 
-\chapter{Arithmetization of Syntax}
+\olchapter{inc}{art}{Arithmetization of Syntax}
+
+\begin{editorial}
+  Note that arithmetization for signed tableaux is not yet available.
+\end{editorial}
 
 \olimport{introduction}
 
@@ -17,9 +21,15 @@
 
 \olimport{substitution}
 
-\iftag{prfSC}{\olimport{proofs-in-lk}}{}
+\iftag{prfSC}{%
+  \olimport{proofs-in-lk}
+}{}
 
-\iftag{prfND}{\olimport{proofs-in-nd}}{}
+\iftag{prfND}{%
+  \olimport{proofs-in-nd}
+}{}
+
+\iftag{prfAX}{\olimport{proofs-in-ax}}{}
 
 \OLEndChapterHook
 

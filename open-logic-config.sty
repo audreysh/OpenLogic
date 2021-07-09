@@ -1,5 +1,5 @@
 % % The Default OLP Configuration File `open-logic-config.sty`
-% % OpenLogic Project
+% % Open Logic Project
 %
 % Description
 % ===========
@@ -12,8 +12,8 @@
 % master files) will include `myversion-config.sty` if it exists. It
 % will do so after it loads this file, so your `myversion-config.sty`
 % will redefine the defaults.  This means you won't have to include
-% everythng, e.g., you can just change some tags and nothing else. You
-% may copy and paste edfinitions you want to change into that file, or
+% everything, e.g., you can just change some tags and nothing else. You
+% may copy and paste definitions you want to change into that file, or
 % copy thi file, rename it `myversion-config.sty` and delete anything
 % you'd like to leave as the default.
 
@@ -35,6 +35,14 @@
 
 \olgreekformulas
 
+% Greek symbols: prefer varphi and varepsilon
+
+\let\oldphi\phi
+\let\phi\varphi
+
+\let\oldepsilon\epsilon
+\let\epsilon\varepsilon
+
 % Logical symbols
 % ---------------
 
@@ -44,10 +52,15 @@
 
 % ### Truth Values
 %
-% - `\True` defaults to $1$ and `\False` to $0$.
+% - `\True` defaults to $\mathbb{T}$ and `\False` to $\mathbb{F}$.
 
-\DeclareDocumentMacro \True {1}
-\DeclareDocumentMacro \False {0}
+\DeclareDocumentMacro \True {\ensuremath{\mathbb{T}}}
+\DeclareDocumentMacro \False {\ensuremath{\mathbb{F}}}
+
+% Other truth values
+
+\DeclareDocumentMacro \Indet {\ensuremath{\mathbb{I}}}
+\DeclareDocumentMacro \Undef {\ensuremath{\mathbb{U}}}
 
 % ### Propositional Constants and Connectives
 %
@@ -75,12 +88,21 @@
 % different symbol, replace `\rightarrow` in the definition, e.g., by
 % `\supset`
 
-\DeclareDocumentMacro \lif {\rightarrow}
+\DeclareDocumentMacro \lif {\mathbin{\rightarrow}}
 
 % - The biconditional is `\liff` and defaults to $\leftrightarrow$.  To
 % use the triple bar $\equiv$ replace with `\equiv`.
 
-\DeclareDocumentMacro \liff {\leftrightarrow}
+\DeclareDocumentMacro \liff {\mathbin{\leftrightarrow}}
+
+% - The conditional `\cif` and defaults to `\boxright` which produces
+% - Lewis's box-arrow symbol.
+
+\DeclareDocumentMacro \cif {\boxright}
+
+% - The strict conditional `\strictif`
+
+\DeclareDocumentMacro \strictif {\fishhookright}
 
 % Quantifiers 
 % ----------- 
@@ -100,13 +122,17 @@
 % `\boldsymbol{\exists}` for boldface, or redefine appropriately if
 % you want parentheses around $\exists x$.
 
-\DeclareDocumentCommand \lexists { o o } {
-    \IfNoValueTF {#1} 
-        { \exists }    % no arguments
-        { \exists #1 } % one argument: variable
+\DeclareDocumentCommand \lexists { t{!} o o } {
+    \exists 
+    \IfBooleanTF {#1} 
+        \mathexclaim    % unique
+        \relax % not unique
     \IfNoValueTF {#2} 
+        \relax     % no arguments
+        { #2 } % one argument: variable
+    \IfNoValueTF {#3} 
         \relax
-        { \, #2 }      % two arguments: space and matrix
+        { \, #3 }      % two arguments: space and matrix
 }
 
 % - The universal quantifier is `\lforall`.
@@ -142,6 +168,8 @@
 
 \DeclareDocumentMacro \Sequent {\Rightarrow}
 
+\DeclareDocumentMacro \nSequent {\mid}
+
 % The sequent symbol in proofs displays as the above sequent symbol.
 
 \DeclareDocumentMacro \fCenter {\ensuremath{\,\Sequent\,}}
@@ -150,23 +178,46 @@
 % operator `Op`, e.g., `\LeftR{\land}` produces `$\land$L`.
 % `\RightR{Op}` does the same for right rules.
 
-\DeclareDocumentCommand \LeftR { m } {\ensuremath{#1\mathrm{L}}}
+\DeclareDocumentCommand \LeftR { m } {\ensuremath{{#1}\mathrm{L}}}
 
-\DeclareDocumentCommand \RightR { m } {\ensuremath{#1\mathrm{R}}}
+\DeclareDocumentCommand \RightR { m } {\ensuremath{{#1}\mathrm{R}}}
+
+\DeclareDocumentCommand \iR { m m o} {\ensuremath{{#1\IfNoValueTF{#3}{}{_{#3}}}{#2}}}
 
 % - `\Weakening`: produces name or abbreviation for weakening rule,
 % e.g., ``W''.
 
 \DeclareDocumentMacro \Weakening {\text{W}}
 
+% - `\Contraction`: produces name or abbreviation for contraction rule,
+% e.g., ``C''.
+
+\DeclareDocumentMacro \Contraction {\text{C}}
+
+% - `\Exchange`: produces name or abbreviation for exchange rule,
+% e.g., ``X''.
+
+\DeclareDocumentMacro \Exchange {\text{X}}
+
+% - `\Cut`: produces name or abbreviation for cut rule,
+% e.g., ``Cut''.
+
+\DeclareDocumentMacro \Cut {\text{Cut}}
 
 % - Rule names: `\Intro{Op}` typesets the name of an intro rule for
 % operator `Op`, e.g., `\Intro{\land}` produces `$\land$Intro`.
 % `\Elim{Op}` does the same for elimination rules.
 
-\DeclareDocumentCommand \Intro { m } {\ensuremath{#1\mathrm{Intro}}}
+\DeclareDocumentCommand \Intro { m } {\ensuremath{{#1}\mathrm{Intro}}}
 
-\DeclareDocumentCommand \Elim { m } {\ensuremath{#1\mathrm{Elim}}}
+\DeclareDocumentCommand \Elim { m } {\ensuremath{{#1}\mathrm{Elim}}}
+
+% - `\FalseInt`, `\FalseCl`: produces name or abbreviation for
+% intuitionistic and classical absurdity rule, e.g., ``$\bot_I$,''
+% ``$\bot_C$''.
+
+\DeclareDocumentMacro \FalseInt {\ensuremath{\lfalse_I}}
+\DeclareDocumentMacro \FalseCl {\ensuremath{\lfalse_C}}
 
 % - `\Discharge{!A}{n}`: typesets a discharged assumption with label
 % $n$, e.g., $[!A]^n$.
@@ -181,6 +232,64 @@
   \LeftLabel{\scriptsize $#2$}
 }
 
+% Proof Terms
+% ---------------------
+%
+% Proof terms used in intuitionistic logic
+
+\DeclareDocumentCommand \typeof { m m } {#1^{#2}}
+
+\DeclareDocumentCommand \andi { m m } {\tuple{#1, #2}}
+\DeclareDocumentCommand \ande { m m } {\fn{p}_{#1}(#2)}
+\DeclareDocumentCommand \ori { m m m } {\fn{in}_{#1}^{#2}(#3)}
+\DeclareDocumentCommand \ore { m m m m m } {\fn{case}(#1, #2.#3, #4.#5)}
+\DeclareDocumentCommand \falsee { m m } {\fn{contr}_{#1}(#2)}
+
+% Axiomatic Derivations
+% ---------------------
+
+% - `\MP`: produces abbreviation for Modus Ponens.
+
+\DeclareDocumentMacro \MP {\textsc{mp}}
+
+% - `\QR`: produces abbreviation for Quantifier Rule.
+
+\DeclareDocumentMacro \QR {\textsc{qr}}
+
+% - `\Hyp`: produces abbreviation for Hypothesis.
+
+\DeclareDocumentMacro \Hyp {\textsc{Hyp}}
+
+% - `\sFmla`: Signed (prefixed) formulas in running text
+
+\DeclareDocumentCommand \sFmla { m m o }{
+  \ensuremath{%
+    \IfNoValueTF{#3}{}{#3\,}%
+    \hbox to.8em{\ensuremath{#1}\hfil} #2}}
+
+% - `\pFmla`: signed prefixed formulas for tableaux
+
+\DeclareDocumentCommand \pFmla { m m m }{
+  \ensuremath{%
+    \hskip 3em{\llap{$#3$}\,}%
+    \hbox to1.3em{\ensuremath{#1}\hfil} #2}}
+
+% Tableaux
+% --------
+
+% - Tableau rule names: `\TRule{Sign}{Op}` typesets the name of a the
+% `Sign` rule for operator `Op`, `\TFalse{Op}` does the same for
+% `False` rules. The optional argument contains the line number to
+% which the rule is applied.
+
+\DeclareDocumentCommand \TRule { m m o }{%
+  \ensuremath{{#2}{#1}\IfNoValueTF{#3}{}{\, #3}}}
+
+% - `\TAss`: justification label for ``assumption''
+
+\DeclareDocumentMacro \TAss {Assumption}
+
+
 % Metalogical Relations
 % ---------------------
 %
@@ -193,19 +302,33 @@
 
 % ### Substitution
 
-% `\Subst{!A}{t}{x}`: The operation of substituting a term for a
+% -`\subst{t}{x}`: typeset the substitution notation
+
+\DeclareDocumentCommand \subst { m m } {#1/#2}
+
+% - `\SSubst{A}{s}`: typeset simultaneous substitution (expects $s$ to
+% be a list of `\subst{t}{x}` expressions, say)
+
+\DeclareDocumentCommand \SSubst { m m } {
+  #1[#2]}
+
+% - `\Subst{!A}{t}{x}`: The operation of substituting a term for a
 % (free) variable in another term or in a formula.  The default is
 % $\varphi[x/t]$, other common notations are $\varphi^t_x$,
 % $\varphi\{t \rightarrow x\}$, or $S^t_x \varphi$.
 
 \DeclareDocumentCommand \Subst { m m m } {
-  #1[#2/#3]}
+  #1[\subst{#2}{#3}]}
 
+% ### pre-Substitution
 
+\DeclareDocumentCommand \pSubst { m m m } {
+  #1[#2/#3]^{-}
+}
 
 % ### The satisfaction/truth relation 
 
-% `\Sat[/]{M}{!A}[s]`, the relation of being satisfied in a
+% - `\Sat[/]{M}{!A}[s]`, the relation of being satisfied in a
 % structure (relative to an assignment), is provided as the command
 % `\Sat` with two mandatory arguents (the structure and the formula)
 % and one optional argument (the assignment).  Use `\Sat/` to create
@@ -216,14 +339,13 @@
   \IfBooleanTF{#1}{
     % negated
     \IfNoValueTF {#4} 
-        { \Struct #2 \not\models #3 }
-        { \Struct #2, #4 \not\models #3}}{
+        { \Struct{#2} \nvDash #3 }
+        { \Struct{#2}, #4 \nvDash #3}}{
     % not negated
     \IfNoValueTF {#4} 
-        { \Struct #2 \models #3 }
-        { \Struct #2, #4 \models #3 }}
+        { \Struct{#2} \vDash #3 }
+        { \Struct{#2}, #4 \vDash #3 }}
 }
-
 
 % ### The derivability relation
 
@@ -243,6 +365,14 @@
         { \vdash }
         { \vdash_{#2} }}
 }
+
+% - `\Thms{X}`: theorems a set of formulas
+
+\DeclareDocumentCommand \Thms { m } {\mathrm{Thm}(#1)}
+
+% - `\PAx`: the set of propositional axioms
+
+\DeclareDocumentMacro \PAx { \mathrm{Ax}_0 }
 
 % ### The semantic consequence relation relation
 
@@ -266,12 +396,25 @@
 % - `\Domain{M}` - domain of a structure, e.g., `\Domain{M}` gives
 % $\left|\mathfrak M\right|$.
 
-\DeclareDocumentCommand \Domain { m }{\left| \Struct #1 \right|}
+\DeclareDocumentCommand \Domain { m }{\left| \Struct{#1} \right|}
 
 % - `\Assign{R}{M}` - Assignment (value of) of a constant/predicate symbol
 % in a structure; e.g., `\Assign{R}{M}` produces $R^\mathfrak{M}$.
 
-\DeclareDocumentCommand \Assign { m m }{#1^{\Struct #2}}
+\DeclareDocumentCommand \Assign { m m }{\mathord{#1^{\Struct{#2}}}}
+
+% - `\varAssign{s'}{s}{x}[o]` - Assignment variant. Takes three mandatory
+% argument (s' differs from s at most at x) and one optional one (s' assigns
+% o to x. Default: `\varAssign{s'}{s}{x}` produces `s' \sim_{x} s`
+% and `\varAssign{s'}{s}{x}[o] produces `s' = s[o/x]`.
+
+\DeclareDocumentCommand \varAssign { m m m o } {
+    \IfNoValueTF {#4}
+        % optional argument not present
+        { #1 \sim_{#3} #2 }
+        % optional argument present
+        { #1 = #2[^{#4}/{#3}] }
+}
 
 % - `\Value{t}{M}[s]` - Value of a term in a structure. Takes two mandatory
 % arguments (term and structure) and one optional argument (variable
@@ -281,10 +424,40 @@
 \DeclareDocumentCommand \Value { m m o} {
     \IfNoValueTF {#3}
         % optional argument not present
-        { \mathrm{Val}^{\Struct #2}(#1) }
+        { \mathrm{Val}^{\Struct{#2}}(#1) }
         % optional argument present
-        { \mathrm{Val}^{\Struct #2}_{#3}(#1) }
+        { \mathrm{Val}^{\Struct{#2}}_{#3}(#1) }
 }
+
+% - `\pAssign{v}` - Typeset a truth-value assignment
+
+\DeclareDocumentCommand \pAssign { m } {\applytofirst{\mathfrak}{#1}}
+
+% - `\pValue{v}(A)[L]` - Truth value of a formula under a truth-value assignment.
+
+\DeclareDocumentCommand \pValue { m d() o}{
+  \overline{\pAssign{#1}}%
+  \IfNoValueTF{#3}{}{_{#3}}%
+  \IfNoValueTF {#2}{}{(#2)}
+}
+
+% - `\pSat[/]{v}{!A}[L]`, the relation of being satisfied by a
+% truth-value assignment in a logic L.
+
+\DeclareDocumentCommand \pSat { t{/} m m o } {
+  \pAssign{#2} 
+      \IfBooleanTF{#1}{\nvDash}{\vDash}%
+      \IfNoValueTF{#4}{}{_{#4}}
+  #3
+}
+
+% - `\tf{\star}[L]`: truth function for $\star$ in $\mathbf{L}$
+
+\DeclareDocumentCommand \tf { m o } {
+      \widetilde{#1}%
+      \IfNoValueTF{#2}{}{_{#2}}
+}
+
 
 % - `\substruct`: symbol for the substructure relation
 
@@ -322,6 +495,26 @@
         { \equiv_{#2} }}
 }
 
+% - `\eqc`: the equivalence class the element (first argument) belongs
+% to; second argument is used to mark the equivalence relation if
+% there's more than one
+
+\DeclareDocumentCommand \eqc { m o } {
+  \IfNoValueTF {#2}
+  {[#1]}
+  {[#1]_{#2}}
+}
+
+% - `\rep`: the representative of an equivalence class, the second
+% argument is used to mark the equivalence relation if there's more
+% than one
+
+\DeclareDocumentCommand \rep { m o } {
+  \IfNoValueTF {#2}
+  {\underline{#1}}
+  {{\underline{#1}}_{#2}}
+}
+
 % - `\iso[/][p]`: relation of being (partially) isomorphic
 
 \DeclareDocumentCommand \iso { t{/} o } {
@@ -348,6 +541,16 @@
 
 \DeclareDocumentCommand \Expan { m m } {(\Struct{#1}, #2)}
 
+% `\nssucc`, `\nsplus`, `\nstimes`, `\nsless`: non-standard
+% arithmetical operations
+
+\DeclareDocumentMacro \nszero {\mathbf{z}}
+\DeclareDocumentMacro \nssucc {*}
+\DeclareDocumentMacro \nsplus {\oplus}
+\DeclareDocumentMacro \nstimes {\otimes}
+\RequirePackage{stmaryrd}
+\DeclareDocumentMacro \nsless {\varolessthan}
+
 
 % Recursion-theoretic Notions and Symbols
 % ---------------------------------------
@@ -355,6 +558,30 @@
 % - `\Proj{n}{i}`: projection functions
 
 \DeclareDocumentCommand \Proj { m m } {P^{#1}_{#2}}
+
+% - `\Zero`: the constant zero function
+
+\DeclareDocumentMacro \Zero {\fn{zero}}
+
+% - `\Succ`: the successor function
+
+\DeclareDocumentMacro \Succ {\fn{succ}}
+
+% - `\Add`: the addition function
+
+\DeclareDocumentMacro \Add {\fn{add}}
+
+% - `\Mult`: the multiplication function
+
+\DeclareDocumentMacro \Mult {\fn{mult}}
+
+% - `\Exp`: the exponentiation function
+
+\DeclareDocumentMacro \Exp {\fn{exp}}
+
+% - `\Pred`: the successor function
+
+\DeclareDocumentMacro \Pred {\fn{pred}}
 
 % - `\tsub`: truncated subtraction function
 
@@ -382,7 +609,15 @@
 
 % - `\bmin{x < y}{!A}`: bounded minimization
 
-\DeclareDocumentCommand \bmin { m m } {\fn{min} \; #1 \; #2}
+\DeclareDocumentCommand \bmin { m m } {(\fn{min} \; #1)\, #2}
+
+% - `\bexists{x < y}{!A}`: bounded existential quantification
+
+\DeclareDocumentCommand \bexists { m m } {(\exists #1)\; #2}
+
+% - `\bforall{x < y}{!A}`: bounded univeral quantification
+
+\DeclareDocumentCommand \bforall { m m } {(\forall #1)\; #2}
 
 % - `\cfind{e}[n]`: partial computable function with index $e$
 
@@ -396,11 +631,91 @@
 
 % - `\redone`: one-step reduction
 
-\DeclareDocumentMacro \redone {\mathrel{\triangleright_1}}
+\DeclareDocumentCommand \redone { o } {
+  \IfNoValueTF {#1}
+  {\xrightarrow{}}
+  {\xrightarrow{#1}}
+}
+
+\DeclareDocumentMacro \aconvone {\redone[\alpha]}
+
+\DeclareDocumentMacro \bredone {\redone[\beta]}
+
+\DeclareDocumentMacro \eredone {\redone[\eta]}
+
+\DeclareDocumentMacro \beredone {\redone[\beta\eta]}
+
+\DeclareDocumentMacro \xredone {\redone[X]}
 
 % - `\red`: reduction
 
-\DeclareDocumentMacro \red {\triangleright}
+\DeclareDocumentCommand \xrightarrowdbl { o m } {
+  \IfNoValueTF {#1}
+  {\xrightarrow{#2} \mathrel{\mkern-14mu}\rightarrow}
+  {\xrightarrow[#1]{#2} \mathrel{\mkern-14mu}\rightarrow}
+}
+
+\DeclareDocumentCommand \red { o } {
+  \IfNoValueTF {#1}
+  {\xrightarrowdbl{}}
+  {\xrightarrowdbl{#1}}
+}
+
+\DeclareDocumentMacro \aconv {\red [\alpha]}
+
+\DeclareDocumentMacro \bred {\red [\beta]}
+
+\DeclareDocumentMacro \ered {\red [\eta]}
+
+\DeclareDocumentMacro \bered {\red [\beta\eta]}
+
+\DeclareDocumentMacro \xred {\red [X]}
+
+% - `\equal`: equivalence relation with some letter over the symbol
+\DeclareDocumentCommand \equal { o } {
+  \IfNoValueTF {#1}
+  {\eq}
+  {\stackrel{#1}{\eq}}
+}
+
+\DeclareDocumentMacro \aeq {\equal [\alpha]}
+
+% - `\eqs`: syntactic equivalent
+\DeclareDocumentMacro \eqs {\equiv}
+
+% - `\redpar`: parallel reduction
+
+\DeclareDocumentCommand \redpar { o } {
+  \IfNoValueTF {#1}
+  {\xLongrightarrow{}}
+  {\xLongrightarrow{#1}}
+}
+
+\DeclareDocumentMacro \bredpar {\redpar [\beta]}
+
+\DeclareDocumentMacro \beredpar {\redpar [\beta\eta]}
+
+\DeclareDocumentMacro \eqa {\equal{\alpha}}
+
+\DeclareDocumentMacro \eqe {\equal{\eta}}
+
+\DeclareDocumentMacro \ext {\ensuremath{\mathit{ext}}}
+
+% - `\cd`: complete development
+
+\DeclareDocumentCommand \cd { o m } {
+  \IfNoValueTF {#1}
+  {{ #2 }^*}
+  {{ #2 }^{* {#1} }}
+}
+
+\DeclareDocumentCommand \bcd { m } {
+  \cd[\beta]{#1}
+}
+
+\DeclareDocumentCommand \becd { m } {
+  \cd[\beta\eta]{#1}
+}
 
 % - `\lambd[x][!A]`: lambda abstract
 
@@ -419,29 +734,98 @@
 
 % - `\scode{s}`: code for a symbol
 
-\DeclareDocumentCommand \scode { m } {\fn{c}(#1)}
+\DeclareDocumentCommand \scode { m } {\fn{c}_{#1}}
 
 % - `\Gn{!A}`: G\"odel number of a string of symbols
 
-\DeclareDocumentCommand \Gn { m } {\#(#1)}
+\DeclareDocumentCommand \Gn { m } {{^{\reflectbox{\tiny\#}}}{#1}{^{\mbox{\tiny\#}}}}
 
 % Modal Logic 
 % -----------
 
-% - `\mSat{M}{!A}[w]`: modal satisfaction relation
+% Modal logic
+% ===========
 
-\DeclareDocumentCommand \mSat { t{/} m m o } {
-  \IfBooleanTF{#1}{
+% - `\mModel{M}` - modal structures; default: set first token in
+% Fraktur
+
+\DeclareDocumentCommand \mModel { m }{\applytofirst{\mathfrak}{#1}}
+
+% `\mSat[/]{M}{!A}[w]`, the relation of being satisfied in a
+% model (at a world), is provided as the command
+% `\mSat` with two mandatory arguments (the model and the formula)
+% and one optional argument (the world).  Use `\mSat/` to create
+% the negated relation.  By default, `\mSat{M}{!A}[w]` is typeset as
+% $\mathfrak{M}, w \models \varphi$.
+
+\DeclareDocumentCommand \mSat { t{/} m m o } {%
+  \IfBooleanTF{#1}{%
     % negated
     \IfNoValueTF {#4} 
-        { \Struct #2 \nVdash #3 }
-        { \Struct #2, #4 \nVdash #3}}{
+        { \mModel{#2} \nVdash #3 }
+        { \mModel{#2}, #4 \nVdash #3}}{%
     % not negated
     \IfNoValueTF {#4} 
-        { \Struct #2 \Vdash #3 }
-        { \Struct #2, #4 \Vdash #3 }}
+        { \mModel{#2} \Vdash #3 }
+        { \mModel{#2}, #4 \Vdash #3 }}}
+
+% - `\mClass{C}` --- typeset class of models
+
+\DeclareDocumentCommand \mClass { m }{\mathcal{#1}}
+
+% - `\Nec`: produces abbreviation for Necessitation.
+
+\DeclareDocumentMacro \Nec {\textsc{nec}}
+
+% - `\RK`: produces abbreviation for Rule K
+
+\DeclareDocumentMacro \RK {\textsc{rk}}
+
+% - `\Dual`: produces abbreviation for Dual
+
+\DeclareDocumentMacro \Dual {\textsc{dual}}
+
+% - `\Taut`: produces abbreviation for Dual
+
+\DeclareDocumentMacro \Taut {\textsc{taut}}
+
+% - `\PL`: produces abbreviation for ``Propositional Logic''
+
+\DeclareDocumentMacro \PL {\textsc{pl}}
+
+% - `\Prop{M}{A}`: the proposition defined by $A$ in $\mathfrak{M}$
+
+\DeclareDocumentCommand \Prop { m m } {
+  {[\!\![} #2 {]\!\!]_{\mModel{#1}}}
 }
 
+% - `\ST`: The standard translation
+
+\DeclareDocumentMacro \ST {\mathord{\mathrm{ST}}}
+
+% - TikZ style for modal models
+
+\tikzset{
+  modal/.style={>=stealth',
+    shorten >=1pt,
+    shorten <=1pt,
+    auto,
+    node distance=1.5cm,
+    label distance=2pt,
+    semithick},
+  every label/.style={phantom,align=left},
+  world/.style = {circle,draw,minimum size=0.5cm,fill=gray!15},
+  modal every node/.style={world},
+  point/.style={circle,draw,inner sep=0.5mm,fill=black},
+  phantom/.style={rectangle,inner sep=0pt,draw=none,fill=none},
+  reflexive above/.style={->,loop,looseness=7,in=60,out=120},
+  reflexive below/.style={->,loop,looseness=7,in=240,out=300},
+  reflexive left/.style={->,loop,looseness=7,in=150,out=210},
+  reflexive right/.style={->,loop,looseness=7,in=30,out=330}
+}
+
+\DeclareDocumentCommand \mTrue { m }{\ensuremath{#1}}
+\DeclareDocumentCommand \mFalse { m }{\ensuremath{\lnot #1}}
 
 % Special Sets and Mathematical Symbols
 % -------------------------------------
@@ -453,6 +837,17 @@
 % definition accordingly.
 
 \DeclareDocumentCommand \Setabs { m m }{\{ #1 : #2 \}}
+
+% - Fregean extensions: Use `\fregeext{x}{!A(x)}` to produce
+%   $\epsilon x\, !A(x)$.
+
+\DeclareDocumentCommand \fregeext { m m }{\oldepsilon #1 \, #2 }
+
+% - Fregean number: Use `\fregenum{x}{!A(x)}` to produce 
+%   $\# x\, !A(x)$.
+
+\DeclareDocumentCommand \fregenum { m m }{\# #1 \, #2 }
+
 
 % - `\Pow{X}`: Power set, produces $\wp(X)$
 
@@ -469,7 +864,7 @@
 \DeclareDocumentCommand \len { m }{\fn{len}(#1)}
 
 % - `\emptyseq`: the empty sequence
-\DeclareDocumentMacro \emptyseq {\emptyset}
+\DeclareDocumentMacro \emptyseq {\Lambda}
 
 % - `\restrict`: restriction of a function to a set (infix operator)
 \DeclareDocumentMacro \restrict {\upharpoonright}
@@ -480,22 +875,39 @@
 % - `\card{X}`: cardinality of a set
 \DeclareDocumentCommand \card { m } {\left| #1 \right|}
 
+% - `\cardle{X}{Y}`: X is no larger than Y
+\DeclareDocumentCommand \cardle { m m } {#1 \preceq #2}
+
+% - `\cardless{X}{Y}`: X is smaller than Y
+\DeclareDocumentCommand \cardless { m m } {#1 \prec #2}
+
+% - `\cardeq{X}{Y}`: X is equinumerous with Y
+\DeclareDocumentCommand \cardeq { m m } {#1 \approx #2}
+
 % - `\tuple{x,y}`: pairs, tuples, sequences
 \DeclareDocumentCommand \tuple { m } {\langle #1 \rangle}
 
 % - `\comp{f}{g}`: composition of f with g, defaults to $g \circ f$
-\DeclareDocumentCommand \comp { m m }{g \circ f}
+\DeclareDocumentCommand \comp { m m }{#2 \circ #1}
 
 % - `\pto`: partial function arrow
 
 \DeclareDocumentMacro \pto {\mathrel{\ooalign{\hfil$\mapstochar\mkern
       5mu$\hfil\cr$\to$}}}
 
-% - `\defined`, `\undefined`: postfix for defined, undefined
+% - `\fdefined`, `\fundefined`: postfix for defined, undefined
 % functions
 
-\DeclareDocumentMacro \defined {\downarrow}
-\DeclareDocumentMacro \undefined {\uparrow}
+\DeclareDocumentMacro \fdefined {\downarrow}
+\DeclareDocumentMacro \fundefined {\uparrow}
+
+% - `cutrank`: cut rank
+
+\DeclareDocumentCommand \cutrank { m }{\fn{cr}(#1)}
+
+% - `maxrank`: max rank
+
+\DeclareDocumentCommand \maxrank { m }{\fn{mr}(#1)}
 
 % ### Particular sets
 
@@ -504,6 +916,9 @@
 
 % - Integers: `\Int`
 \DeclareDocumentMacro \Int {\mathbb{Z}}
+
+% - Positive integers: `\PosInt`
+\DeclareDocumentMacro \PosInt {\mathbb{Z}^+}
 
 % - Real numbers: `\Real`
 \DeclareDocumentMacro \Real {\mathbb{R}}
@@ -516,6 +931,17 @@
 
 % - Identity relation: `\Id{X}`
 \DeclareDocumentCommand \Id { m } {\mathord{\mathrm{Id}_{#1}}}
+
+% Topological notions
+% -------------------
+
+% - `\Top{O}`: Open sets
+
+\DeclareDocumentCommand \Top { m }{\mathcal{#1}}
+
+% - `\Interior{V}`: the interior of $V$
+
+\DeclareDocumentCommand \Interior { m }{\mathrm{Int}(#1)}
 
 % ### Symbols for Turing Machines
 
@@ -549,22 +975,27 @@
 
 % - `\Prf`: the proof relation
 
-\DeclareDocumentCommand \Prf { o } { \mathrm{Pr}\IfNoValueTF {#1} {} {_\Th{#1}}}
-\DeclareDocumentCommand \OPrf { o } { \mathsf{Pr}\IfNoValueTF {#1} {} {_\Th{#1}}}
+\DeclareDocumentCommand \Prf { o } { \mathrm{Prf}\IfNoValueTF {#1} {} {_{#1}}}
+\DeclareDocumentCommand \OPrf { o } { \mathsf{Prf}\IfNoValueTF {#1} {} {_{#1}}}
 
-% - `\Prov`: the provability relation
+% - `\Refut`: the refutation relation
 
-\DeclareDocumentCommand \Prov { o } { \mathrm{Prov}\IfNoValueTF {#1} {} {_\Th{#1}}}
-\DeclareDocumentCommand \OProv { o } { \mathsf{Prov}\IfNoValueTF {#1} {} {_\Th{#1}}}
+\DeclareDocumentCommand \Refut { o } { \mathrm{Ref}\IfNoValueTF {#1} {} {_{#1}}}
+\DeclareDocumentCommand \ORefut { o } { \mathsf{Ref}\IfNoValueTF {#1} {} {_{#1}}}
+
+% - `\Prov`: the provability predicate
+
+\DeclareDocumentCommand \Prov { o } { \mathrm{Prov}\IfNoValueTF {#1} {} {_{#1}}}
+\DeclareDocumentCommand \OProv { o } { \mathsf{Prov}\IfNoValueTF {#1} {} {_{#1}}}
 
 % - `\RProv`: the Rosser provability relation
 
-\DeclareDocumentCommand \RProv { o } { \mathrm{RProv}\IfNoValueTF {#1} {} {_\Th{#1}}}
-\DeclareDocumentCommand \ORProv { o } { \mathsf{RProv}\IfNoValueTF {#1} {} {_\Th{#1}}}
+\DeclareDocumentCommand \RProv { o } { \mathrm{RProv}\IfNoValueTF {#1} {} {_{#1}}}
+\DeclareDocumentCommand \ORProv { o } { \mathsf{RProv}\IfNoValueTF {#1} {} {_{#1}}}
 
 % - `\OCon`: the consistency statement
 
-\DeclareDocumentCommand \OCon { o } { \mathsf{Con}\IfNoValueTF {#1} {} {_\Th{#1}}}
+\DeclareDocumentCommand \OCon { o } { \mathsf{Con}\IfNoValueTF {#1} {} {_{#1}}}
 
 % Typesetting commands for logical concepts
 % =========================================
@@ -582,21 +1013,34 @@
 % - `\Struct{M}` - First-order structures; by default, the first token
 % in Fraktur
 
-\DeclareDocumentCommand \Struct { m }{\mathfrak #1}
+% `\applytofirst` will apply #1 to #2 after expanding #2 once.
 
-% - `\mStruct{M}` - modal structures; default: set first token in
-% Fraktur
+\def\applytofirst#1#2{{\expandafter#1#2}}
 
-\DeclareDocumentCommand \mStruct { m }{\mathfrak #1}
+\DeclareDocumentCommand \Struct { m }{\applytofirst{\mathfrak}{#1}}
 
 % - `\Lang{L}` - Languages; default: set first token in callgraphic
 % font
 
-\DeclareDocumentCommand \Lang { m }{\mathcal #1}
+\DeclareDocumentCommand \Lang { m }{\applytofirst{\mathcal}{#1}}
 
 % - `\Log{L}` - Logics; default: set entirely in boldface
 
-\DeclareDocumentCommand \Log { m }{\mathbf{#1}}
+\DeclareDocumentCommand \Log { m o }{\ensuremath{\mathbf{#1}
+\IfNoValueTF {#2}{}{_{#2}}}}
+
+% - Some logics
+
+\DeclareDocumentMacro {\LogCL} {\Log{C}}
+\DeclareDocumentMacro {\LogIL} {\Log{I}}
+\DeclareDocumentMacro {\LogLuk} {\Log{\textbf{\L}}}
+\DeclareDocumentMacro {\LogGod} {\Log{G}}
+\DeclareDocumentMacro {\LogKs} {\Log{Ks}}
+\DeclareDocumentMacro {\LogKw} {\Log{Kw}}
+\DeclareDocumentMacro {\LogLP} {\Log{LP}}
+\DeclareDocumentMacro {\LogRM} {\Log{RM}}
+\DeclareDocumentMacro {\LogHal} {\Log{Hal}}
+
 
 % - `\Obj` - Object-language symbols; default: set entirely in
 % sans-serif italics
@@ -608,6 +1052,10 @@
 %  parentheses. Some prefer no parentheses around the arguments.
 
 \DeclareDocumentCommand \Atom { m m }{ \mathord{#1}(#2) }
+
+% - `\Ax{A}`: typeset an axiom
+
+\DeclareDocumentCommand \Ax { m } {\ensuremath{\mathrm{#1}}}
 
 % - `\PIso` - Set of all partial isomorphisms
 
@@ -633,9 +1081,13 @@
 % to, e.g., typeset the parameters as subscripts (e.g.,
 % $\mathrm{Frm}_\mathcal{L}$.
 
-% - `\Var`: the set of propositional variables
+% - `\Var`: the set of individual variables
 
-\def\Var{\mathrm{Var}}
+\DeclareDocumentMacro \Var { \mathrm{Var} }
+
+% - `\PVar`: the set of propositional variables
+
+\DeclareDocumentMacro \PVar { \mathrm{At}_0 }
 
 % - `\Trm[L]`: the set of terms (of a language)
 
@@ -652,6 +1104,21 @@
         { \mathrm{Frm}({\Lang #1}) }
 }
 
+% - `\Trm2[L]`: the set of second-order terms (of a language)
+
+\DeclareDocumentCommand \TrmSOL { o } {
+    \IfNoValueTF {#1} 
+        { \mathrm{Trm}^2 }
+        { \mathrm{Trm}^2({\Lang #1}) }
+}
+
+% - `\Frm2[L]`: the set of second-order formulas (of a language)
+\DeclareDocumentCommand \FrmSOL { o } {
+    \IfNoValueTF {#1} 
+        { \mathrm{Frm}^2 }
+        { \mathrm{Frm}^2({\Lang #1}) }
+}
+
 % - `\SubFrm{!A}`: the set of subformulas of a formula (mandatory
 % argument: formula)
 
@@ -659,12 +1126,91 @@
         \mathrm{SFrm}({#1})
 }
 
+% - `\FV{!A}`: set of free variables of a formula or term
+
+\DeclareDocumentCommand \FV { m } {
+        \mathrm{FV}({#1})
+}
+
+
 % - `\Sent[L]`: the set of sentences (of a language)
 \DeclareDocumentCommand \Sent { o } {
     \IfNoValueTF {#1} 
         { \mathrm{Sent} }
-        { \mathrm{Sent}({\Lang #1}) }
+        { \mathrm{Sent}({\Lang{#1}}) }
 }
+
+% Additional set theory stuff
+% ================
+% From Tim Button's Open Set Theory
+
+\DeclareDocumentMacro \unitline {\text{L}}
+\DeclareDocumentMacro \unitsquare {\text{S}}
+\newcommand{\onesphere}{\mathbf{S}}
+\newcommand\rotationsgroup{R}
+
+\DeclareDocumentCommand \cardneq { m m } {#1 \not\approx #2}
+\DeclareDocumentCommand \cardnless { m m } {#1 \npreceq #2}
+\DeclareDocumentCommand \ordeq { m m } {#1 \cong #2}
+\DeclareDocumentCommand \ordneq { m m } {#1 \ncong #2}
+\DeclareDocumentCommand \funimage { m m } {#1[#2]}
+
+\newcommand\stageshier{\emph{Stages-are-key}}
+\newcommand\stagesord{\emph{Stages-are-ordered}}
+\newcommand\stagesacc{\emph{Stages-accumulate}}
+\newcommand\stagessucc{\emph{Stages-keep-going}}
+\newcommand\stagesinf{\emph{Stages-hit-infinity}}
+\newcommand\limofsize{\emph{Limitation-of-size}}
+\newcommand\stagesinex{\emph{Stages-are-inexhaustible}}
+\newcommand\stagescofin{\emph{Stages-are-super-cofinal}}
+
+\usetikzlibrary{lindenmayersystems}
+\pgfdeclarelindenmayersystem{Hilbert curve}{
+	\rule{L -> +RF-LFL-FR+}
+	\rule{R -> -LF+RFR+FL-}}
+
+\newcommand\closureofunder[2]{\mathrm{clo}_{#1}(#2)}
+\newcommand\Closureofunder[2]{\mathrm{Clo}_{#1}(#2)}
+\newcommand\equivrep[2]{[#1]_{#2}}
+\newcommand\equivclass[2]{#1/_{\!{#2}}}
+\newcommand\Intequiv{\sim}
+\newcommand\Ratequiv{\backsim}
+\newcommand\Realequiv{\Bumpeq}
+\newcommand\funrestrictionto[2]{#1\mathord{\restriction}_{#2}}
+\newcommand\isomorphic{\cong}
+\newcommand\nisomorphic{\ncong}
+\newcommand\precdot{\mathrel{\prec{\mkern -12mu \cdot}}}
+\newcommand\disjointsum{\sqcup}
+\newcommand\ordtype[1]{\mathrm{ord}(#1)}
+\newcommand\ordsucc[1]{#1^{+}}
+\newcommand\cardsucc[1]{#1^{\oplus}}
+\newcommand\rlexless{\mathrel{\sphericalangle}}
+\newcommand\canonord\lhd
+\newcommand\ordplus{+}
+\newcommand\ordtimes{\cdot}
+\newcommand\ordexpo[2]{#1^{(#2)}}
+\newcommand\cardplus{\oplus}
+\newcommand\cardtimes{\otimes}
+\newcommand\cardexpo[2]{#1^{#2}}
+\newcommand\funfromto[2]{{}^{#1}{#2}}
+\newcommand\setrank[1]{\mathrm{rank}(#1)}
+\DeclareMathOperator*{\supstrict}{\mathrm{lsub}}
+\newcommand\trcl[1]{\mathrm{trcl}(#1)}
+\newcommand\ZF{\Th{ZF}}
+\newcommand\SP{\Th{SP}}
+\newcommand\ZFC{\Th{ZFC}}
+\newcommand\Z{\Th{Z}}
+\newcommand\ZFminus{\ZF^{-}}
+\newcommand\Zminus{\Z^{-}}
+
+\newcommand\cardfont[1]{\mathfrak{#1}}
+
+% Miscellaneous
+% =============
+
+% `\fact` -- factorial function
+
+\DeclareDocumentCommand \fact {m} {#1\,\mathexclaim}
 
 % Commands for uniform formulations
 % =================================
@@ -751,6 +1297,12 @@
 
 \settexttoken{variable}{variable}{variables}
 
+% - `propositional variable`: defaults to "propositional
+% variable/variables", redefine for, e.g., "sentence
+% letter"
+
+\settexttoken{propositional variable}{propositional variable}{propositional variables}
+
 % - `constant`: defaults to "constant", redefine for "individual
 % constant", "constant symbol."
 
@@ -808,13 +1360,22 @@
 
 \settexttoken{structure}{structure}{structures}
 
+% - `valuation`: valuation, truth-value assignment
+
+\settexttoken{valuation}{valuation}{valuations}
+
 % - `domain`: domain of a structure
 
 \settexttoken{domain}{domain}{domains}
 
-% - `\value`: value (denotation) of a term
+% - `value`: value (denotation) of a term
 
 \settexttoken{value}{value}{values}
+
+% - `relational model`: term for modal structures, defaults to
+% "relational model", redefine for "Kripke model".
+
+\settexttoken{relational model}{relational model}{relational models}
 
 % - `derivation`: derivation in a calculus, proof
 
@@ -836,12 +1397,39 @@
 
 \settexttoken{nonderivability}{non-derivability}{non-derivabilities}
 
+% - `tableau`: tableau, tableaux; or truth tree
+
+\settexttoken{tableau}{tableau}{tableaux}
+
+% - `signed formula`: signed formula in a tableau
+
+\settexttoken{signed formula}{signed formula}{signed formulas}
+
+% - `complete`: negation complete, syntactically complete (of theories)
+
+\settexttoken{complete}{complete}{complete}
+
+% - `axiomatizable`: effectively/recursively axiomatizable
+
+\settexttoken{axiomatizable}*{axiomatizable}{axiomatizable}
+\settexttoken{axiomatized}*{axiomatized}{axiomatized}
+\settexttoken{axiomatizability}*{axiomatizability}{axiomatizability}
+
+% - `represents`, `representable`
+
+\settexttoken{represents}{represents}{represent}
+\settexttoken{representable}{representable}{representable}
+
 % - `discharge`: discharge an assumption in a natural deduction proof,
 % cancel, close. Also: undischarged, non-cancelled, open.
 
 \settexttoken{discharge}{discharge}{discharges}
 \settexttoken{discharged}{discharged}{discharged}
-\settexttoken{undischarged}{undischarged}{undischarged}
+\settexttoken{undischarged}*{undischarged}{undischarged}
+
+% - `complete`: syntactic completeness of a set of sentences
+
+\settexttoken{complete}{complete}{complete}
 
 % - `enumerable`: term for finite or countably infinite; defaults to
 % "enumerable", redefine for "countable".
@@ -879,6 +1467,23 @@
 \settexttoken{bijective}{bijective}{bijective}
 \settexttoken{bijection}{bijection}{bijections}
 
+% - `decidable`:
+
+\settexttoken{decidable}{decidable}{decidable}
+
+\settexttoken{computably enumerable}{computably enumerable}{computably enumerable}
+\settexttoken{c.e.}{c.e.}{c.e.}
+
+\settexttoken{argument}*{argument}{arguments}
+\settexttoken{parameter}{parameter}{parameters}
+
+
+% - `lambda define`: Also: represent.
+
+\settexttoken{lambda define}{$\lambd$-define}{$\lambd$-defines}[$\lambd$-Define][$\lambd$-Defines]
+\settexttoken{lambda defined}{$\lambd$-defined}{$\lambd$-defined}[$\lambd$-Defined]
+\settexttoken{lambda definable}{$\lambd$-definable}{$\lambd$-definable}[$\lambd$-Definable]
+
 % Tags
 % ====
 
@@ -893,7 +1498,7 @@
 %   operators which are treated as primitives. Default: all as
 %   primitives.
 
-\tagtrue{prvNot,prvOr,prvAnd,prvIf,prvIff,prvTrue,prvFalse,prvEx,prvAll}
+\tagtrue{prvNot,prvOr,prvAnd,prvIf,prvIff,prvTrue,prvFalse,prvEx,prvAll,prvBox,prvDiamond}
 
 % - `defNot`, `defOr`, `defAnd`, `defIf`, `defIff`, `defTrue`,
 %  `defFalse`, `defEx`, `defAll` - Defined operators: tags for
@@ -901,16 +1506,16 @@
 %  Not all combinations of primitive/defined operators will result in
 %  complete definitions!
 
-\tagfalse{defNot,defOr,defAnd,defIf,defIff,defTrue,defFalse,defEx,defAll}
+\tagfalse{defNot,defOr,defAnd,defIf,defIff,defTrue,defFalse,defEx,defAll,defBox,defDiamond}
 
 % - `probNot`, `probOr`, `probAnd`, `probIf`, `probIff`, `probEx`,
 %   `probAll` - Cases in proofs: tags for (sets of) operators for
-%   which cases are proved; if the corresponding tag is off then the
+%   which cases are proved; if the corresponding tag is on then the
 %   case is added as a problem. Default: prove all cases. Note:
 %   propositional constants are part of induction base case and are
 %   always treated, if included.
 
-\tagfalse{probNot,probOr,probAnd,probIf,probIff,probEx,probAll}
+\tagfalse{probNot,probOr,probAnd,probIf,probIff,probEx,probAll,probBox,probDiamond}
 
 % - `limitclause` - Limit clause in inductive definitions: do you want
 % inductive definitions to have a "Nothing else is a ..." clause?
@@ -929,10 +1534,53 @@
 
 \tagtrue{lambda}
 
-% - prfND, prfSC - alternative coverage of proof systems. Set `prfND` to
-% true if you want to include material on natural deduction, and
-% `prfSC` for the sequent calculus.  By default, we include both.
+% - prfND, prfSC, prfAX, prfTab - alternative coverage of proof systems. Set
+% `prfND` to true if you want to include material on natural
+% deduction, `prfSC` for the sequent calculus, `prfAX` for
+% axiomatic deduction, `prfTab` for tableaux.  By default, we include all.
 
 \tagtrue{prfSC}
 \tagtrue{prfND}
+\tagtrue{prfAX}
+\tagtrue{prfTab}
 
+% - `FOL` - if true, we produce text for FOL, otherwise for PL
+
+\tagtrue{FOL}
+
+% - `cmplCCS` - prove completeness via generating a complete
+% consistent set
+% - `cmplMCS` - prove completeness via maximally consistent sets
+
+\tagtrue{cmplCCS}
+\tagtrue{cmplMCS}
+
+% - `novice` - for material aimed at novice readers with little math
+%   background
+
+\tagtrue{novice}
+
+% - `math` - examples etc. for readers with a math background
+
+\tagtrue{math}
+
+% - `compsci` - examples etc. for readers with a CS background
+
+\tagtrue{compsci}
+
+% - `phil` - examples etc. for readers with a philosophy background
+
+\tagtrue{phil}
+
+% Colors
+% ======
+
+\colorlet{oldiagcolorA}{black}
+\colorlet{oldiagcolorB}{gray}
+\definecolor{oldiagcolorC}{HTML}{a81c21}
+\definecolor{oldiagcolorD}{HTML}{1973ba}
+\definecolor{oldiagcolorE}{HTML}{4d6f39}
+
+\settexttoken{colorC}{red}{red}
+\settexttoken{colorD}{blue}{blue}
+\settexttoken{colorE}{green}{green}

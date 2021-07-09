@@ -24,7 +24,7 @@ h(x) & = & g(x,x) + 1 \\
 \end{eqnarray*}
 For each primitive recursive function $f_i$, the value of $h$ and
 $f_i$ differ at $i$. So $h$ is computable, but not primitive
-recursive; and one can say the same about $g$. This is a an
+recursive; and one can say the same about $g$. This is an
 ``effective'' version of Cantor's diagonalization argument.
 
 One can provide more explicit examples of computable functions that
@@ -38,9 +38,9 @@ g_{n + 1}(x) & = & g_n^x(x)
 You can confirm that each function $g_n$ is primitive recursive. Each
 successive function grows much faster than the one before; $g_1(x)$ is
 equal to $2x$, $g_2(x)$ is equal to $2^x \cdot x$, and $g_3(x)$ grows
-roughly like an exponential stack of $x$ $2$'s. Ackermann's function is
-essentially the function $G(x) = g_x(x)$, and one can show that this
-grows faster than any primitive recursive function.
+roughly like an exponential stack of $x$ $2$'s. The Ackermann-P\'eter
+function is essentially the function $G(x) = g_x(x)$, and one can show
+that this grows faster than any primitive recursive function.
 
 Let us return to the issue of enumerating the primitive recursive
 functions. Remember that we have assigned symbolic notations to each
@@ -55,7 +55,7 @@ recursively, as follows:
 3,k,l,\#(H),\#(G_0),\dots,\#(G_{k-1}) \rangle \\
 \#(\fn{Rec}_l[G,H]) & = & \langle 4, l, \#(G), \#(H) \rangle
 \end{eqnarray*}
-Here I am using the fact that every sequence of numbers can be viewed
+Here we are using the fact that every sequence of numbers can be viewed
 as a natural number, using the codes from the last section. The upshot
 is that every code is assigned a natural number. Of course, some
 sequences (and hence some numbers) do not correspond to notations; but
@@ -75,11 +75,11 @@ zero function.)
 We can now take the function $g(x,y)$ to be given by $f_x(y)$, where
 $f_x$ refers to the enumeration we have just described. How do we know
 that $g(x,y)$ is computable? Intuitively, this is clear: to compute
-$g(x,y)$, first ``unpack'' $x$, and see if it a notation for a unary
-function; if it is, compute the value of that function on input
-$y$.
+$g(x,y)$, first ``unpack'' $x$, and see if it is a notation for a unary
+function. If it is, compute the value of that function on input~$y$.
 
-\begin<TMs>{digress}
+\begin{tagblock}{TMs}
+\begin{digress}
 You may already be convinced that (with some work!) one can write a
 program (say, in Java or C++) that does this; and now we can appeal to
 the Church-Turing thesis, which says that anything that, intuitively,
@@ -88,11 +88,11 @@ is computable can be computed by a Turing machine.
 Of course, a more direct way to show that $g(x,y)$ is computable is to
 describe a Turing machine that computes it, explicitly. This would,
 in particular, avoid the Church-Turing thesis and appeals to
-intuition. But, as noted above, working with Turing machines directly is
-unpleasant. Soon we will have built up enough machinery to show
+intuition. Soon we will have built up enough machinery to show
 that $g(x,y)$ is computable, appealing to a model of computation that
 can be \emph{simulated} on a Turing machine: namely, the recursive
 functions.
 \end{digress}
+\end{tagblock}
 
 \end{document}

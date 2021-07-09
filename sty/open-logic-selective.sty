@@ -4,7 +4,7 @@
 % cribbed from tagging.sty package by Brent Longborough
 % http://www.ctan.org/tex-archive/macros/latex/contrib/tagging 
 
-% uses etoolbox's toggles for tags instead, allows for boolean
+% uses etoolbox's toggles for tags instead, allows for Boolean
 % expressions in addition to tag lists
 
 \NeedsTeXFormat{LaTeX2e}
@@ -12,9 +12,6 @@
 
 \RequirePackage{etoolbox}
 \RequirePackage{xpunctuate} % for xcomma, xperiod
-
-
-\makeatletter
 
 % initialize a list of tags as true
 
@@ -62,16 +59,21 @@
   \def\taglist@result{}%
   \def\do##1{\tagpair##1}%
   \docsvlist{#1}\cref{\taglist@result}}
-  
-  
-% change \begin to take optional tags in <...>
-% if one of the tags is active, behave as \begin otherwise would
-% if one of them is, supress everything until the end of the environment
 
-\let\orig@begin\begin
+% tagblock{tags} -- include contents of environment if a tag is true
 
-\def\begin{\@ifnextchar<{\tag@begin}{\orig@begin}}
-\def\tag@begin<#1>{\iftag{#1}\orig@begin\supressenv}
+\newenvironment{tagblock}[1]%
+  {\iftag{#1}{%
+      \let\comment\relax%
+      \let\endcomment\relax%
+    }{}%
+    \comment\ignorespaces}% 
+    {\endcomment\ignorespacesafterend}%
+
+% \supressenv -- turn an envireonment into a comment 
+% \excludeenv -- make the specified environment into a comment
+% environment for the time being
+% \includeenv -- restore a previously excluded environment
 
 \def\supressenv#1{\begingroup\@bsphack
              \let\do\@makeother\dospecials\catcode`\^^M\active
@@ -81,9 +83,6 @@
              \let\verbatim@finish\relax
              \def\@currenvir{#1}%
              \verbatim@}
-
-% \excludeenv -- make the specified environment into a comment environment
-% \includeenv -- restore a previously excluded environment
 
 \def\excludeenv#1{%
   \expandafter\let\csname orig@#1\expandafter
@@ -105,7 +104,8 @@
     \expandafter\ifstrempty{#3}{}{\item #3}}}
 
 % \begin{tagenumerate}{tags} -- like enumerate, but only if more than
-% one tag is active
+% one tag is active. If only one tag is active, just print the item
+% without \item
 
 \newenvironment{tagenumerate}[1]{%
   \tagcount{#1}%
@@ -122,5 +122,15 @@
 
 \def\startycommalist{\def\ycomma{\def\ycomma{, }}}
 
-\makeatother
+% tagprob environent -- include a problem, but only if tags in
+% argument are true
 
+\def\saveprob{\global\let\oldprob\prob
+  \global\let\oldendprob\endprob}
+\def\killprob{\global\let\prob\comment
+  \global\let\endprob\endcomment}
+\def\restoreprob{\global\let\prob\oldprob
+  \global\let\endprob\oldendprob}
+
+\newcommand{\tagprob}[2][tagTrue]{\saveprob\iftag{#1}{\iftag{#2}{}{\killprob}}{\killprob}}
+\newcommand{\tagendprob}{\restoreprob}

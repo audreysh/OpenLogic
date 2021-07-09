@@ -16,7 +16,6 @@
 
 \NeedsTeXFormat{LaTeX2e}
 
-
 % Theorem-like Environments
 % -------------------------
 
@@ -69,6 +68,11 @@
 \newenvironment{probtag}[1]{\begin{prob}}{\end{prob}}
 
 \declaretheorem[
+  style=definition,
+  name=Axiom,
+  unnumbered]{axiom}
+
+\declaretheorem[
   style=remark,
   name=Remark]{rem}
 
@@ -97,9 +101,7 @@
 \crefname{prob}{Problem}{Problems}
 \crefname{rem}{Remark}{Remarks}
 \crefname{figure}{Figure}{Figures}
-
-
-
+\crefname{table}{Table}{Tables}
 
 % Other Enviroments
 % -----------------
@@ -122,10 +124,16 @@
 % ```
 % after the definition of `digress`.
 
-% - `explain`: Any long and/or informal explanation that's useful for
-% novice readers but could be left out
+% - `explain`: Any explanatory material that's useful especially
+%   on first reading but might be left out if the material is
+%   presented only for review or completeness
 
 \newenvironment{explain}{}{}
+
+% - `informal`: Any informal explanation that's useful for
+% novice readers but could be left out
+
+\newenvironment{informal}{}{}
 
 % - `intro`: for comments and comparisions to other introductory
 % texts, e.g., regarding terminology, conventions, or proof methods.
@@ -154,3 +162,13 @@
 
 \excludeenv{editorial} % exclude editorial remarks by default
 
+% - `defish`: for definition-like material, e.g., rules
+
+\newenvironment{defish}{\begin{oframed}\noindent}{\end{oframed}}
+
+% - `derivation`: for derivations, a tabular environment with three
+% colums for line number, formula, and justification.
+
+\newenvironment{derivation}{%
+  ~\begin{trivlist}\item\begin{tabular}[b]{@{}rll@{}}}
+  {\end{tabular} \end{trivlist}}
